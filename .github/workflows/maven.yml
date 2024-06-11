@@ -1,11 +1,11 @@
-#  maven.yml
+# maven.yml
 name: Java CI with Maven
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   pull_request:
-    branches: [ "main" ]
+    branches: ["main"]
 
 jobs:
   build:
@@ -24,18 +24,24 @@ jobs:
       - name: Build with Maven (skip tests)
         run: mvn -B package -DskipTests --file pom.xml
 
-      # Optional: Uploads the full dependency graph to GitHub to improve the quality of Dependabot alerts this repository can receive
-      - name: Update dependency graph
-        uses: advanced-security/maven-dependency-submission-action@571e99aab1055c2e71a1e2309b9691de18d6b7d6
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
 
-      # Deployment steps
+      - name: Build and push Docker image
+        run: |
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/app-ci-cd-github-spring-boot:latest .
+          docker push ${{ secrets.DOCKER_USERNAME }}/app-ci-cd-github-spring-boot:latest
+
       - name: Set up SSH
         uses: webfactory/ssh-agent@v0.5.4
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      - name: Deploy to Server
+      - name: Deploy Docker container to server
         run: |
-          scp target/app-ci-cd-github-spring-boot-0.0.1-SNAPSHOT.jar user@yourserver.com:/path/to/deployment/
-          ssh user@yourserver.com 'bash -s' < ./scripts/deploy.sh
-
+          ssh user@yourserver.com 'docker pull ${{ secrets.DOCKER_USERNAME }}/app-ci-cd-github-spring-boot:latest'
+          ssh user@yourserver.com 'docker stop app-ci-cd-github-spring-boot || true && docker rm app-ci-cd-github-spring-boot || true'
+          ssh user@yourserver.com 'docker run -d --name app-ci-cd-github-spring-boot -p 8080:8080 ${{ secrets.DOCKER_USERNAME }}/app-ci-cd-github-spring-boot:latest'
