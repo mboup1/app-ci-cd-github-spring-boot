@@ -22,9 +22,9 @@ jobs:
         run: |
           npm install -g angular-cli
           npm install
-          ng build --prod --base-href=/your-app-name/
+          ng build --prod --base-href=/mboup1/
           mkdir deploy
-          cp -r dist/your-app-name/* deploy
+          cp -r dist/mboup1/* deploy
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
