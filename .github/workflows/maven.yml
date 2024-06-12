@@ -40,8 +40,8 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      - name: Deploy Docker container to server
-        run: |
-          ssh user@yourserver.com 'docker pull mboup1/app-ci-cd-github-spring-boot:latest'
-          ssh user@yourserver.com 'docker stop app-ci-cd-github-spring-boot || true && docker rm app-ci-cd-github-spring-boot || true'
-          ssh user@yourserver.com 'docker run -d --name app-ci-cd-github-spring-boot -p 8080:8080 mboup1/app-ci-cd-github-spring-boot:latest'
+#      - name: Deploy Docker container to server
+#        run: |
+#          ssh user@yourserver.com 'docker pull mboup1/app-ci-cd-github-spring-boot:latest'
+#          ssh user@yourserver.com 'docker stop app-ci-cd-github-spring-boot || true && docker rm app-ci-cd-github-spring-boot || true'
+#          ssh user@yourserver.com 'docker run -d --name app-ci-cd-github-spring-boot -p 8080:8080 mboup1/app-ci-cd-github-spring-boot:latest'
